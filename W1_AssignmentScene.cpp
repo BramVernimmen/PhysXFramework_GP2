@@ -18,11 +18,12 @@ void W1_AssignmentScene::Initialize()
 	EnablePhysxDebugRendering(true);
 	m_pPhysxScene->setVisualizationParameter(PxVisualizationParameter::eBODY_LIN_VELOCITY, 2.f);
 
+
 	const auto pPhysX = PhysxManager::GetInstance()->GetPhysics();
 
 	// CAMERA
-	m_SceneContext.GetCamera()->SetPosition(XMFLOAT3{ -20.f, m_SceneContext.GetCamera()->GetPosition().y, -40.f});
-	m_SceneContext.GetCamera()->SetForward(XMFLOAT3{ 0.5f, 0.f, 1.f });
+	//m_SceneContext.GetCamera()->SetPosition(XMFLOAT3{ -20.f, m_SceneContext.GetCamera()->GetPosition().y, -40.f});
+	//m_SceneContext.GetCamera()->SetForward(XMFLOAT3{ 0.5f, 0.f, 1.f });
 
 	//GROUND CUBE
 	const XMFLOAT3 groundCubeDimension{ 350.0f, 0.1f, 350.0f };
@@ -111,11 +112,11 @@ void W1_AssignmentScene::Update()
 	}
 	if (m_SceneContext.GetInput()->IsActionTriggered(InputIds::Forward))
 	{
-		m_pSphereActor->addTorque(PxVec3{ scaler * camRight.x * camForward.x, scaler * camRight.y * camForward.y, scaler * camRight.z * camForward.z }, PxForceMode::eIMPULSE);
+		m_pSphereActor->addTorque(PxVec3{ scaler * camRight.x, scaler * camRight.y , scaler * camRight.z}, PxForceMode::eIMPULSE);
 	}
 	if (m_SceneContext.GetInput()->IsActionTriggered(InputIds::Backward))
 	{
-		m_pSphereActor->addTorque(PxVec3{ -scaler * camRight.x * camForward.x, -scaler * camRight.y * camForward.y, -scaler * camRight.z * camForward.z }, PxForceMode::eIMPULSE);
+		m_pSphereActor->addTorque(PxVec3{ -scaler * camRight.x, -scaler * camRight.y, -scaler * camRight.z }, PxForceMode::eIMPULSE);
 	}
 	if (m_SceneContext.GetInput()->IsActionTriggered(InputIds::Up))
 	{
