@@ -10,7 +10,7 @@ void FrictionTestScene::Initialize()
 	const auto pPhysX = PhysxManager::GetInstance()->GetPhysics();
 
 	//GROUNDPLANE
-	const PxMaterial* pDefaultMaterial = pPhysX->createMaterial(0.5f, 0.5f, 0.2f);
+	const PxMaterial* pDefaultMaterial = pPhysX->createMaterial(0.0f, 0.0f, 0.0f);
 	const auto pGroundActor = pPhysX->createRigidStatic(PxTransform{ PxQuat{PxPiDivTwo, PxVec3{0,0,1}} });
 	PxRigidActorExt::createExclusiveShape(*pGroundActor, PxPlaneGeometry{}, *pDefaultMaterial);
 	m_pPhysxScene->addActor(*pGroundActor);
@@ -68,7 +68,7 @@ void FrictionTestScene::Initialize()
 	const PxBoxGeometry cubeBoxGeometry = PxBoxGeometry{ cubeActorDimension.x / 2.f, cubeActorDimension.y / 2.f, cubeActorDimension.z / 2.f };
 
 	const PxMaterial* pNoFrictionMaterial = pPhysX->createMaterial(0.f, 0.f, 0.f);
-	const PxMaterial* pHalfFrictionMaterial = pPhysX->createMaterial(0.5f, 0.5f, 0.f);
+	const PxMaterial* pHalfFrictionMaterial = pPhysX->createMaterial(0.3f, 0.3f, 0.f);
 	const PxMaterial* pFullFrictionMaterial = pPhysX->createMaterial(1.f, 1.f, 0.f);
 
 	PxRigidActorExt::createExclusiveShape(*pCubeActor1, cubeBoxGeometry, *pNoFrictionMaterial);
