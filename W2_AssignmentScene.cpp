@@ -51,6 +51,13 @@ void W2_AssignmentScene::Initialize()
 	m_pSphere2->Translate(-2.f, 25.f, 0.f);
 	m_pSphere3->Translate(2.f, 25.f, 0.f);
 
+	auto d6Joint = PxD6JointCreate(*pPhysX, nullptr, PxTransform{ PxIdentity }, pSphereActor1, PxTransform{ PxIdentity });
+	d6Joint->setMotion(PxD6Axis::eX, PxD6Motion::eFREE);
+	d6Joint->setMotion(PxD6Axis::eY, PxD6Motion::eFREE);
+	d6Joint->setMotion(PxD6Axis::eTWIST, PxD6Motion::eFREE);
+	d6Joint->setMotion(PxD6Axis::eSWING1, PxD6Motion::eFREE);
+	d6Joint->setMotion(PxD6Axis::eSWING2, PxD6Motion::eFREE);
+
 	// Cubes
 	float width{ 1.5f };
 	float height{ 1.5f };
@@ -160,6 +167,14 @@ void W2_AssignmentScene::Update()
 	{
 		m_pSphere1->GetRigidActor()->is<PxRigidDynamic>()->addTorque({ 0.f, 0.f, -force });
 	}
+	if (m_SceneContext.GetInput()->IsKeyboardKey(InputTriggerState::down, VK_UP))
+	{
+		m_pSphere1->GetRigidActor()->is<PxRigidDynamic>()->addTorque({ force * 10.f, 0.f, 0.f });
+	}
+	if (m_SceneContext.GetInput()->IsKeyboardKey(InputTriggerState::down, VK_DOWN))
+	{
+		m_pSphere1->GetRigidActor()->is<PxRigidDynamic>()->addTorque({ -force * 10.f, 0.f, 0.f });
+	}
 	if (m_SceneContext.GetInput()->IsKeyboardKey(InputTriggerState::pressed, VK_SPACE))
 	{
 		m_pSphere1->GetRigidActor()->is<PxRigidDynamic>()->addForce({ 0.f, force * 2.f, 0.f }, PxForceMode::eIMPULSE);
@@ -201,8 +216,6 @@ void W2_AssignmentScene::Update()
 
 		m_pHingeJointBlue->setRevoluteJointFlag(PxRevoluteJointFlag::eDRIVE_ENABLED, true);
 		
-		Logger::GetInstance()->LogDebug(std::to_wstring(m_pHingeJointBlue->getAngle()));
-
 		// check if the hinge has rotated for 90 degrees, if so we want it to stop
 		if (m_pHingeJointBlue->getAngle() <= -PxPiDivTwo)
 		{
@@ -220,8 +233,6 @@ void W2_AssignmentScene::Update()
 
 		m_pHingeJointRed->setRevoluteJointFlag(PxRevoluteJointFlag::eDRIVE_ENABLED, true);
 		
-		Logger::GetInstance()->LogDebug(std::to_wstring(m_pHingeJointRed->getAngle()));
-
 		// check if the hinge has rotated for 90 degrees, if so we want it to stop
 		if (m_pHingeJointRed->getAngle() <= -PxPiDivTwo)
 		{

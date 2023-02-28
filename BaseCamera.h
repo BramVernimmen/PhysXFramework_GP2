@@ -18,7 +18,7 @@ public:
 	const DirectX::XMFLOAT3& GetTarget() const { return m_Target; }
 
 	void SetPosition(const DirectX::XMFLOAT3& newPos) { m_Position = newPos; };
-	void SetForward(const DirectX::XMFLOAT3& newForward) { m_Forward = newForward; };
+	virtual void SetForward(const DirectX::XMFLOAT3& newForward) { m_Forward = newForward; };
 	void SetPositionAndLookAt(const XMFLOAT3& pos, const XMFLOAT3& lookAt);
 
 

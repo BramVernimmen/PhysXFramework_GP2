@@ -8,6 +8,7 @@ public:
 	virtual ~FreeCamera() = default;
 
 	virtual void Update(const SceneContext& sceneContext) override;
+	 void SetForward(const DirectX::XMFLOAT3& newForward) override;
 
 private:
 	POINT m_PrevCursorPosition;

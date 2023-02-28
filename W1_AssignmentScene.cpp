@@ -22,8 +22,8 @@ void W1_AssignmentScene::Initialize()
 	const auto pPhysX = PhysxManager::GetInstance()->GetPhysics();
 
 	// CAMERA
-	//m_SceneContext.GetCamera()->SetPosition(XMFLOAT3{ -20.f, m_SceneContext.GetCamera()->GetPosition().y, -40.f});
-	//m_SceneContext.GetCamera()->SetForward(XMFLOAT3{ 0.5f, 0.f, 1.f });
+	m_SceneContext.GetCamera()->SetPosition(XMFLOAT3{ -20.f, m_SceneContext.GetCamera()->GetPosition().y, -40.f});
+	m_SceneContext.GetCamera()->SetForward(XMFLOAT3{ 0.5f, 0.f, 1.f });
 
 	//GROUND CUBE
 	const XMFLOAT3 groundCubeDimension{ 350.0f, 0.1f, 350.0f };

@@ -32,6 +32,12 @@ void FreeCamera::Update(const SceneContext& sceneContext)
 		float yDiff = cursorMovement.y / 200.0f;
 
 		//Logger::GetInstance()->LogDebug(std::to_wstring(xDiff) + std::to_wstring(yDiff));
+		
+		//m_TotalPitch = asinf(-forward.m128_f32[1]);
+		//m_TotalYaw = atan2f(forward.m128_f32[0], forward.m128_f32[2]);
+		// OR
+		//m_TotalPitch = asinf(-m_Forward.y);
+		//m_TotalYaw = atan2f(m_Forward.x, m_Forward.z);
 
 		m_TotalYaw += xDiff * XMConvertToRadians(45);
 		m_TotalPitch += yDiff * XMConvertToRadians(45);
@@ -53,16 +59,25 @@ void FreeCamera::Update(const SceneContext& sceneContext)
 
 	XMVECTOR position = XMLoadFloat3(&m_Position);
 
+	const bool isSprinting{ input->IsKeyboardKey(InputTriggerState::down, VK_LSHIFT) }; // sets 0 if not sprinting, 1 if we are
+	const float sprintModifier{ (isSprinting * 4.f) + 1.f }; 
+	// (0 * 4) + 1 = 1 -> isNotSprinting: multiplication will not affect anything
+	// (1 * 4) + 1 = 4 -> isSprinting: movement will be 4 times as fast
 
 	if (input->IsKeyboardKey(InputTriggerState::down, m_UpKey))
-		position += forward * m_Speed * deltaTime;
+		position += forward * m_Speed * deltaTime * sprintModifier;
 	else if (input->IsKeyboardKey(InputTriggerState::down, 'S'))
-		position -= forward * m_Speed * deltaTime;
+		position -= forward * m_Speed * deltaTime * sprintModifier;
 
 	if (input->IsKeyboardKey(InputTriggerState::down, m_LeftKey))
-		position -= right * m_Speed * deltaTime;
+		position -= right * m_Speed * deltaTime * sprintModifier;
 	else if (input->IsKeyboardKey(InputTriggerState::down, 'D'))
-		position += right * m_Speed * deltaTime;
+		position += right * m_Speed * deltaTime * sprintModifier;
+
+	if (input->IsKeyboardKey(InputTriggerState::down, 'Q'))
+		position -= up * m_Speed * deltaTime * sprintModifier;
+	else if (input->IsKeyboardKey(InputTriggerState::down, 'E'))
+		position += up * m_Speed * deltaTime * sprintModifier;
 
 
 	XMStoreFloat3(&m_Position, position);
@@ -70,5 +85,12 @@ void FreeCamera::Update(const SceneContext& sceneContext)
 	XMStoreFloat3(&m_Up, up);
 	XMStoreFloat3(&m_Right, right);
 	BuildView();
+}
+
+void FreeCamera::SetForward(const DirectX::XMFLOAT3& newForward)
+{
+	m_Forward = newForward;
+	m_TotalPitch = asinf(-m_Forward.y);
+	m_TotalYaw = atan2f(m_Forward.x, m_Forward.z);
 }
 
