@@ -9,17 +9,18 @@
 void W2_AssignmentScene::Initialize()
 {
 	EnablePhysxDebugRendering(true);
+	// visualize the joints
 	m_pPhysxScene->setVisualizationParameter(PxVisualizationParameter::eJOINT_LOCAL_FRAMES, 1.0f);
 
 	auto pPhysX = PhysxManager::GetInstance()->GetPhysics();
-	auto pDefaultMaterial = pPhysX->createMaterial(0.5f, 0.5f, 0.2f);
+	const auto pDefaultMaterial = pPhysX->createMaterial(0.5f, 0.5f, 0.2f);
 
 	// Ground plane
 	const auto pGroundActor = pPhysX->createRigidStatic(PxTransform{ PxQuat{PxPiDivTwo, {0,0,1}} });
 	PxRigidActorExt::createExclusiveShape(*pGroundActor, PxPlaneGeometry{}, *pDefaultMaterial);
 	m_pPhysxScene->addActor(*pGroundActor);
 
-	// Triangle Chair
+	// Triangle Mesh Level
 	m_pLevelTriangle = new MeshObject(L"Resources/Meshes/Level.ovm");
 	AddGameObject(m_pLevelTriangle);
 
@@ -51,7 +52,7 @@ void W2_AssignmentScene::Initialize()
 	m_pSphere2->Translate(-2.f, 25.f, 0.f);
 	m_pSphere3->Translate(2.f, 25.f, 0.f);
 
-	auto d6Joint = PxD6JointCreate(*pPhysX, nullptr, PxTransform{ PxIdentity }, pSphereActor1, PxTransform{ PxIdentity });
+	const auto d6Joint = PxD6JointCreate(*pPhysX, nullptr, PxTransform{ PxIdentity }, pSphereActor1, PxTransform{ PxIdentity });
 	d6Joint->setMotion(PxD6Axis::eX, PxD6Motion::eFREE);
 	d6Joint->setMotion(PxD6Axis::eY, PxD6Motion::eFREE);
 	d6Joint->setMotion(PxD6Axis::eTWIST, PxD6Motion::eFREE);
@@ -59,9 +60,9 @@ void W2_AssignmentScene::Initialize()
 	d6Joint->setMotion(PxD6Axis::eSWING2, PxD6Motion::eFREE);
 
 	// Cubes
-	float width{ 1.5f };
-	float height{ 1.5f };
-	float depth{ 1.5f };
+	const float width{ 1.5f };
+	float height{ 1.5f }; // cannot be const, will be modified later for ease of use
+	float depth{ 1.5f }; // cannot be const, will be modified later for ease of use
 	m_pCube1 = new CubePosColorNorm(width, height, depth, XMFLOAT4{Colors::Blue});
 	m_pCube2 = new CubePosColorNorm(width, height, depth, XMFLOAT4{ Colors::Red });
 	AddGameObject(m_pCube1);
@@ -106,11 +107,11 @@ void W2_AssignmentScene::Initialize()
 
 	const auto pFMod = SoundManager::GetInstance()->GetSystem();
 	// SOUND 2D
-	FMOD_RESULT result = pFMod->createStream("Resources/Sounds/bell.mp3", FMOD_2D, nullptr, &m_pSound2D);
+	const FMOD_RESULT result = pFMod->createStream("Resources/Sounds/bell.mp3", FMOD_2D, nullptr, &m_pSound2D);
 	SoundManager::GetInstance()->ErrorCheck(result);
 
 
-	// revalue the width, height and depth for these
+	// revalue the height and depth for these
 	height /= 4.f;
 	depth *= 4.f;
 
@@ -182,30 +183,7 @@ void W2_AssignmentScene::Update()
 
 	if (m_SceneContext.GetInput()->IsKeyboardKey(InputTriggerState::pressed, 'R'))
 	{
-		m_pSphere1->Translate(0.f, 6.f, 0.f);
-		m_pSphere1->GetRigidActor()->is<PxRigidDynamic>()->putToSleep();
-		m_pSphere1->GetRigidActor()->is<PxRigidDynamic>()->wakeUp();
-		m_pSphere2->Translate(-2.f, 25.f, 0.f);
-		m_pSphere2->GetRigidActor()->is<PxRigidDynamic>()->putToSleep();
-		m_pSphere2->GetRigidActor()->is<PxRigidDynamic>()->wakeUp();
-		m_pSphere3->Translate(2.f, 25.f, 0.f);
-		m_pSphere3->GetRigidActor()->is<PxRigidDynamic>()->putToSleep();
-		m_pSphere3->GetRigidActor()->is<PxRigidDynamic>()->wakeUp();
-
-		m_pCube1->Translate(-4.f, 6.f, 0.f);
-		m_pCube1->RotateDegrees(0.f, 0.f, 0.f);
-		m_pCube1->GetRigidActor()->is<PxRigidDynamic>()->putToSleep();
-		m_pCube1->GetRigidActor()->is<PxRigidDynamic>()->wakeUp();
-		m_pCube2->Translate(4.f, 6.f, 0.f);
-		m_pCube2->RotateDegrees(0.f, 0.f, 0.f);
-		m_pCube2->GetRigidActor()->is<PxRigidDynamic>()->putToSleep();
-		m_pCube2->GetRigidActor()->is<PxRigidDynamic>()->wakeUp();
-
-		m_pHingeCubeBlue->RotateDegrees(0.f, 0.f, 0.f);
-		m_pHingeCubeBlue->Translate(-8.5f, 16.75f, 0.f);
-		m_pHingeCubeRed->RotateDegrees(0.f, 0.f, 0.f);
-		m_pHingeCubeRed->Translate(8.5f, 16.75f, 0.f);
-
+		Reset();
 	}
 
 	if (m_ShouldUpdateBlue)
@@ -274,4 +252,31 @@ void W2_AssignmentScene::onTrigger(PxTriggerPair* pairs, PxU32 count)
 			}
 		}
 	}
+}
+
+void W2_AssignmentScene::Reset()
+{
+	m_pSphere1->Translate(0.f, 6.f, 0.f);
+	m_pSphere1->GetRigidActor()->is<PxRigidDynamic>()->putToSleep();
+	m_pSphere1->GetRigidActor()->is<PxRigidDynamic>()->wakeUp();
+	m_pSphere2->Translate(-2.f, 25.f, 0.f);
+	m_pSphere2->GetRigidActor()->is<PxRigidDynamic>()->putToSleep();
+	m_pSphere2->GetRigidActor()->is<PxRigidDynamic>()->wakeUp();
+	m_pSphere3->Translate(2.f, 25.f, 0.f);
+	m_pSphere3->GetRigidActor()->is<PxRigidDynamic>()->putToSleep();
+	m_pSphere3->GetRigidActor()->is<PxRigidDynamic>()->wakeUp();
+
+	m_pCube1->Translate(-4.f, 6.f, 0.f);
+	m_pCube1->RotateDegrees(0.f, 0.f, 0.f);
+	m_pCube1->GetRigidActor()->is<PxRigidDynamic>()->putToSleep();
+	m_pCube1->GetRigidActor()->is<PxRigidDynamic>()->wakeUp();
+	m_pCube2->Translate(4.f, 6.f, 0.f);
+	m_pCube2->RotateDegrees(0.f, 0.f, 0.f);
+	m_pCube2->GetRigidActor()->is<PxRigidDynamic>()->putToSleep();
+	m_pCube2->GetRigidActor()->is<PxRigidDynamic>()->wakeUp();
+
+	m_pHingeCubeBlue->RotateDegrees(0.f, 0.f, 0.f);
+	m_pHingeCubeBlue->Translate(-8.5f, 16.75f, 0.f);
+	m_pHingeCubeRed->RotateDegrees(0.f, 0.f, 0.f);
+	m_pHingeCubeRed->Translate(8.5f, 16.75f, 0.f);
 }

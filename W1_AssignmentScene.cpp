@@ -16,6 +16,7 @@ enum InputIds : int
 void W1_AssignmentScene::Initialize()
 {
 	EnablePhysxDebugRendering(true);
+	// show the velocity of the sphere
 	m_pPhysxScene->setVisualizationParameter(PxVisualizationParameter::eBODY_LIN_VELOCITY, 2.f);
 
 
@@ -49,7 +50,7 @@ void W1_AssignmentScene::Initialize()
 
 	//SPHERE ACTOR
 	m_pSphereActor = pPhysX->createRigidDynamic(PxTransform{ PxIdentity });
-	PxSphereGeometry sphereGeometry = PxSphereGeometry{ radius };
+	const PxSphereGeometry sphereGeometry = PxSphereGeometry{ radius };
 	const PxMaterial* pSphereMaterial = pPhysX->createMaterial(0.1f, 0.9f, 0.5f);
 	
 	PxRigidBodyExt::setMassAndUpdateInertia(*m_pSphereActor, 25.f);
@@ -99,8 +100,8 @@ void W1_AssignmentScene::Initialize()
 
 void W1_AssignmentScene::Update()
 {
-	XMFLOAT3 camForward = m_SceneContext.GetCamera()->GetForward();
-	XMFLOAT3 camRight = m_SceneContext.GetCamera()->GetRight();
+	const XMFLOAT3 camForward = m_SceneContext.GetCamera()->GetForward();
+	const XMFLOAT3 camRight = m_SceneContext.GetCamera()->GetRight();
 	const float scaler{ 5.0f };
 	if (m_SceneContext.GetInput()->IsActionTriggered(InputIds::Left))
 	{

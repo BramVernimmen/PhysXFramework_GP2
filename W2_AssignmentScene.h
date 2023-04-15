@@ -42,5 +42,7 @@ private:
 
 	bool m_ShouldUpdateBlue{ false };
 	bool m_ShouldUpdateRed{ false };
+
+	void Reset();
 };
 
